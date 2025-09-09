@@ -9,10 +9,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
-  <!-- ✅ LOAD FIREBASE VIA SCRIPT TAGS -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
 </head>
 <body class="light-theme">
   <!-- Theme Toggle Button -->
@@ -67,22 +63,22 @@
     </div>
   </section>
 
-  <!-- Portfolio Section -->
+  <!-- Portfolio Section (DYNAMIC) -->
   <section id="portfolio" class="section portfolio">
     <div class="container">
       <h2>My Portfolio</h2>
       <div class="portfolio-grid">
-        <!-- Loaded from Firebase -->
+        <!-- Dynamically populated from localStorage -->
       </div>
     </div>
   </section>
 
-  <!-- Marketplace Section -->
+  <!-- Marketplace Section (DYNAMIC) -->
   <section id="marketplace" class="section marketplace">
     <div class="container">
       <h2>Marketplace</h2>
       <div class="marketplace-grid">
-        <!-- Loaded from Firebase -->
+        <!-- Dynamically populated from localStorage -->
       </div>
     </div>
   </section>
@@ -127,6 +123,7 @@
           <i class="fas fa-envelope"></i>
         </a>
       </div>
+      <!-- Admin Login -->
       <p style="margin-top: 1.5rem; font-size: 0.875rem; color: var(--text-secondary);">
         <a href="login.html" style="color: var(--accent); text-decoration: none; font-weight: 500;">
           👤 Admin Login
@@ -135,75 +132,60 @@
     </div>
   </footer>
 
-  <!-- Initialize Firebase and Load Data -->
+  <!-- Load Data & Render Dynamically -->
+  <script src="data.js"></script>
   <script>
-    // ✅ Wait for page to load
-    document.addEventListener('DOMContentLoaded', function() {
-      if (typeof firebase === 'undefined') {
-        console.error('Firebase not loaded');
-        return;
-      }
+    // Render Portfolio dynamically
+    const portfolioContainer = document.querySelector('.portfolio-grid');
+    const marketplaceContainer = document.querySelector('.marketplace-grid');
 
-      // ✅ FIXED CONFIG — NO EXTRA SPACES
-      const firebaseConfig = {
-        apiKey: "AIzaSyBcI1KL5b89xlH8QdNAxUhTpz1MmsPu5wo",
-        authDomain: "owldev-portfolio.firebaseapp.com",
-        databaseURL: "https://owldev-portfolio-default-rtdb.firebaseio.com", // ✅ FIXED
-        projectId: "owldev-portfolio",
-        storageBucket: "owldev-portfolio.firebasestorage.app",
-        messagingSenderId: "562451876503",
-        appId: "1:562451876503:web:651b38e95a918dd3e877d2"
-      };
-
-      // Initialize
-      firebase.initializeApp(firebaseConfig);
-      const dbRef = firebase.database().ref('siteData');
-
-      const portfolioContainer = document.querySelector('.portfolio-grid');
-      const marketplaceContainer = document.querySelector('.marketplace-grid');
-
-      dbRef.on('value', (snapshot) => {
-        const data = snapshot.val() || { portfolio: [], marketplace: [] };
-
-        // Render Portfolio
-        portfolioContainer.innerHTML = '';
-        if (data.portfolio?.length) {
-          data.portfolio.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'portfolio-card';
-            card.innerHTML = `
-              <img src="${item.image}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/400x220/cccccc/333333?text=Image+Not+Found'" />
-              <h3>${item.title}</h3>
-              <p>${item.description}</p>
-              <div class="tags">
-                ${(item.tags || []).map(tag => `<span class="tag">${tag}</span>`).join('')}
-              </div>
-            `;
-            portfolioContainer.appendChild(card);
-          });
-        } else {
-          portfolioContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-secondary);">No portfolio items yet.</p>`;
-        }
-
-        // Render Marketplace
-        marketplaceContainer.innerHTML = '';
-        if (data.marketplace?.length) {
-          data.marketplace.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'marketplace-card';
-            card.innerHTML = `
-              <img src="${item.image}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/400x220/cccccc/333333?text=Image+Not+Found'" />
-              <h3>${item.title}</h3>
-              <p>${item.description}</p>
-              <div class="price">${item.price}</div>
-              <p class="note">${item.note}</p>
-            `;
-            marketplaceContainer.appendChild(card);
-          });
-        } else {
-          marketplaceContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-secondary);">No marketplace items yet.</p>`;
-        }
+    function renderPublicPortfolio() {
+      const data = JSON.parse(localStorage.getItem('owldev_data')) || siteData;
+      portfolioContainer.innerHTML = '';
+      data.portfolio.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'portfolio-card';
+        card.innerHTML = `
+          <img src="${item.image}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/400x220/cccccc/333333?text=Image+Not+Found'" />
+          <h3>${item.title}</h3>
+          <p>${item.description}</p>
+          <div class="tags">
+            ${item.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+          </div>
+        `;
+        portfolioContainer.appendChild(card);
       });
+
+      if (data.portfolio.length === 0) {
+        portfolioContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-secondary);">No portfolio items yet.</p>`;
+      }
+    }
+
+    function renderPublicMarketplace() {
+      const data = JSON.parse(localStorage.getItem('owldev_data')) || siteData;
+      marketplaceContainer.innerHTML = '';
+      data.marketplace.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'marketplace-card';
+        card.innerHTML = `
+          <img src="${item.image}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/400x220/cccccc/333333?text=Image+Not+Found'" />
+          <h3>${item.title}</h3>
+          <p>${item.description}</p>
+          <div class="price">${item.price}</div>
+          <p class="note">${item.note}</p>
+        `;
+        marketplaceContainer.appendChild(card);
+      });
+
+      if (data.marketplace.length === 0) {
+        marketplaceContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-secondary);">No marketplace items yet.</p>`;
+      }
+    }
+
+    // Initial render
+    document.addEventListener('DOMContentLoaded', () => {
+      renderPublicPortfolio();
+      renderPublicMarketplace();
     });
   </script>
 

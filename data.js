@@ -1,13 +1,10 @@
-// data.js — CLEAN START — NO DEFAULT ITEMS
-// data.js — CLEAN START
+// data.js — Local Storage Edition
 const siteData = {
   portfolio: [],
   marketplace: []
 };
 
-// Initialize localStorage only if it doesn't exist (so your edits won't be overwritten)
-// Only initialize localStorage if it doesn't exist (so your edits are never overwritten)
+// Initialize localStorage if empty
 if (!localStorage.getItem('owldev_data')) {
   localStorage.setItem('owldev_data', JSON.stringify(siteData));
 }
-

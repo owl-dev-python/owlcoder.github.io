@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Owl_Dev | Roblox Creator & Developer</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body class="light-theme">
+  <!-- Theme Toggle Button -->
+  <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+    <i class="fas fa-moon"></i>
+  </button>
+
+  <!-- Sticky Navbar -->
+  <nav class="navbar">
+    <div class="nav-brand">Owl_Dev</div>
+    <ul class="nav-links">
+      <li><a href="#hero">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#portfolio">Portfolio</a></li>
+      <li><a href="#marketplace">Marketplace</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="hamburger" id="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="hero" class="hero">
+    <div class="hero-content">
+      <h1>Hi, I'm <span class="highlight">Owl_Dev</span> – Roblox Creator & Developer.</h1>
+      <p>I design and develop high-quality Roblox games and assets.</p>
+      <a href="#portfolio" class="cta-button">Explore My Work</a>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="section about">
+    <div class="container">
+      <h2>About Me</h2>
+      <div class="about-content">
+        <div class="about-img">
+          <img src="assets/avatar.png" alt="Owl_Dev Avatar" />
+        </div>
+        <div class="about-text">
+          <p>
+            I'm a passionate Roblox developer with years of experience crafting immersive games, optimized scripts, and stunning 3D assets.
+            My goal is to push the boundaries of what’s possible in Roblox — combining creativity with clean, efficient code.
+          </p>
+          <p>
+            Whether you're looking for a custom game, modular scripts, or premium 3D models — I’ve got you covered.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Portfolio Section (DYNAMIC) -->
+  <section id="portfolio" class="section portfolio">
+    <div class="container">
+      <h2>My Portfolio</h2>
+      <div class="portfolio-grid">
+        <!-- Dynamically populated from data.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Marketplace Section (DYNAMIC) -->
+  <section id="marketplace" class="section marketplace">
+    <div class="container">
+      <h2>Marketplace</h2>
+      <div class="marketplace-grid">
+        <!-- Dynamically populated from data.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="section contact">
+    <div class="container">
+      <h2>Get In Touch</h2>
+      <div class="contact-content">
+        <form id="contact-form" class="contact-form">
+          <input type="text" placeholder="Your Name" required />
+          <input type="email" placeholder="Your Email" required />
+          <textarea placeholder="Your Message" rows="5" required></textarea>
+          <button type="submit" class="submit-btn">Send Message</button>
+        </form>
+        <div class="contact-info">
+          <h3>Or reach out directly:</h3>
+          <p><i class="fab fa-discord"></i> Discord: <strong>owl_coder</strong></p>
+          <p><i class="fas fa-envelope"></i> Email: <strong>goldpack000@gmail.com</strong></p>
+          <div class="social-links">
+            <a href="https://discord.com/users/owl_coder" target="_blank" aria-label="Discord">
+              <i class="fab fa-discord"></i>
+            </a>
+            <a href="mailto:goldpack000@gmail.com" target="_blank" aria-label="Email">
+              <i class="fas fa-envelope"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>© 2025 Owl_Dev. All rights reserved.</p>
+      <div class="social-links">
+        <a href="https://discord.com/users/owl_coder" target="_blank" aria-label="Discord">
+          <i class="fab fa-discord"></i>
+        </a>
+        <a href="mailto:goldpack000@gmail.com" target="_blank" aria-label="Email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </div>
+      <!-- ✅ RESTORED: Admin Login Link -->
+      <p style="margin-top: 1.5rem; font-size: 0.875rem; color: var(--text-secondary);">
+        <a href="login.html" style="color: var(--accent); text-decoration: none; font-weight: 500;">
+          👤 Admin Login
+        </a>
+      </p>
+    </div>
+  </footer>
+
+  <!-- Load Data & Render Dynamically -->
+  <script src="data.js"></script>
+  <script>
+    // Render Portfolio dynamically
+    const portfolioContainer = document.querySelector('.portfolio-grid');
+    const marketplaceContainer = document.querySelector('.marketplace-grid');
+
+    function renderPublicPortfolio() {
+      const data = JSON.parse(localStorage.getItem('owldev_data')) || siteData;
+      portfolioContainer.innerHTML = '';
+      data.portfolio.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'portfolio-card';
+        card.innerHTML = `
+          <img src="${item.image}" alt="${item.title}" />
+          <h3>${item.title}</h3>
+          <p>${item.description}</p>
+          <div class="tags">
+            ${item.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+          </div>
+        `;
+        portfolioContainer.appendChild(card);
+      });
+    }
+
+    function renderPublicMarketplace() {
+      const data = JSON.parse(localStorage.getItem('owldev_data')) || siteData;
+      marketplaceContainer.innerHTML = '';
+      data.marketplace.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'marketplace-card';
+        card.innerHTML = `
+          <img src="${item.image}" alt="${item.title}" />
+          <h3>${item.title}</h3>
+          <p>${item.description}</p>
+          <div class="price">${item.price}</div>
+          <p class="note">${item.note}</p>
+        `;
+        marketplaceContainer.appendChild(card);
+      });
+    }
+
+    // Initial render
+    document.addEventListener('DOMContentLoaded', () => {
+      renderPublicPortfolio();
+      renderPublicMarketplace();
+    });
+  </script>
+
+  <!-- Main Scripts -->
+  <script src="script.js"></script>
+</body>
+</html>

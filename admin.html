@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard - Owl_Dev</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body class="light-theme">
+  <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+    <i class="fas fa-moon"></i>
+  </button>
+
+  <nav class="navbar">
+    <div class="nav-brand">🦉 Owl_Dev Admin</div>
+    <button id="logout-btn" style="background: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; font-weight: 500;">Logout</button>
+  </nav>
+
+  <div class="container" style="padding-top: 5rem; max-width: 100%;">
+    <h2>Admin Dashboard</h2>
+    <p>Manage your Portfolio and Marketplace items below.</p>
+
+    <!-- Portfolio Section -->
+    <section id="admin-portfolio" style="margin: 3rem 0;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3>Portfolio Items</h3>
+        <button id="add-portfolio-btn" class="cta-button" style="padding: 0.5rem 1rem; font-size: 0.9rem;">+ Add New</button>
+      </div>
+      <div id="portfolio-list" class="admin-grid">
+        <!-- Dynamically populated -->
+      </div>
+    </section>
+
+    <!-- Marketplace Section -->
+    <section id="admin-marketplace" style="margin: 3rem 0;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3>Marketplace Items</h3>
+        <button id="add-marketplace-btn" class="cta-button" style="padding: 0.5rem 1rem; font-size: 0.9rem;">+ Add New</button>
+      </div>
+      <div id="marketplace-list" class="admin-grid">
+        <!-- Dynamically populated -->
+      </div>
+    </section>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="admin.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

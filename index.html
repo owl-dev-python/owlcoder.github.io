@@ -9,6 +9,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- ✅ LOAD FIREBASE VIA SCRIPT TAGS -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
 </head>
 <body class="light-theme">
   <!-- Theme Toggle Button -->
@@ -63,22 +67,22 @@
     </div>
   </section>
 
-  <!-- Portfolio Section (DYNAMIC — FROM FIREBASE) -->
+  <!-- Portfolio Section -->
   <section id="portfolio" class="section portfolio">
     <div class="container">
       <h2>My Portfolio</h2>
       <div class="portfolio-grid">
-        <!-- Dynamically populated from Firebase -->
+        <!-- Loaded from Firebase -->
       </div>
     </div>
   </section>
 
-  <!-- Marketplace Section (DYNAMIC — FROM FIREBASE) -->
+  <!-- Marketplace Section -->
   <section id="marketplace" class="section marketplace">
     <div class="container">
       <h2>Marketplace</h2>
       <div class="marketplace-grid">
-        <!-- Dynamically populated from Firebase -->
+        <!-- Loaded from Firebase -->
       </div>
     </div>
   </section>
@@ -123,7 +127,6 @@
           <i class="fas fa-envelope"></i>
         </a>
       </div>
-      <!-- Admin Login -->
       <p style="margin-top: 1.5rem; font-size: 0.875rem; color: var(--text-secondary);">
         <a href="login.html" style="color: var(--accent); text-decoration: none; font-weight: 500;">
           👤 Admin Login
@@ -132,81 +135,79 @@
     </div>
   </footer>
 
-  <!-- Load Firebase & Render Data -->
-  <script type="module">
-    import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js')
-      .then(() => import('https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js'))
-      .then(() => {
-        // Firebase Configuration
-        const firebaseConfig = {
-          apiKey: "AIzaSyBcI1KL5b89xlH8QdNAxUhTpz1MmsPu5wo",
-          authDomain: "owldev-portfolio.firebaseapp.com",
-          databaseURL: "https://owldev-portfolio-default-rtdb.firebaseio.com",
-          projectId: "owldev-portfolio",
-          storageBucket: "owldev-portfolio.firebasestorage.app",
-          messagingSenderId: "562451876503",
-          appId: "1:562451876503:web:651b38e95a918dd3e877d2"
-        };
+  <!-- Initialize Firebase and Load Data -->
+  <script>
+    // ✅ Wait for page to load
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof firebase === 'undefined') {
+        console.error('Firebase not loaded');
+        return;
+      }
 
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const dbRef = firebase.database().ref('siteData');
+      // ✅ FIXED CONFIG — NO EXTRA SPACES
+      const firebaseConfig = {
+        apiKey: "AIzaSyBcI1KL5b89xlH8QdNAxUhTpz1MmsPu5wo",
+        authDomain: "owldev-portfolio.firebaseapp.com",
+        databaseURL: "https://owldev-portfolio-default-rtdb.firebaseio.com", // ✅ FIXED
+        projectId: "owldev-portfolio",
+        storageBucket: "owldev-portfolio.firebasestorage.app",
+        messagingSenderId: "562451876503",
+        appId: "1:562451876503:web:651b38e95a918dd3e877d2"
+      };
 
-        const portfolioContainer = document.querySelector('.portfolio-grid');
-        const marketplaceContainer = document.querySelector('.marketplace-grid');
+      // Initialize
+      firebase.initializeApp(firebaseConfig);
+      const dbRef = firebase.database().ref('siteData');
 
-        // Listen for real-time data updates
-        dbRef.on('value', (snapshot) => {
-          const data = snapshot.val() || { portfolio: [], marketplace: [] };
+      const portfolioContainer = document.querySelector('.portfolio-grid');
+      const marketplaceContainer = document.querySelector('.marketplace-grid');
 
-          // Render Portfolio
-          portfolioContainer.innerHTML = '';
-          if (data.portfolio && data.portfolio.length > 0) {
-            data.portfolio.forEach(item => {
-              const card = document.createElement('div');
-              card.className = 'portfolio-card';
-              card.innerHTML = `
-                <img src="${item.image}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/400x220/cccccc/333333?text=Image+Not+Found'" />
-                <h3>${item.title}</h3>
-                <p>${item.description}</p>
-                <div class="tags">
-                  ${(item.tags || []).map(tag => `<span class="tag">${tag}</span>`).join('')}
-                </div>
-              `;
-              portfolioContainer.appendChild(card);
-            });
-          } else {
-            portfolioContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-secondary);">No portfolio items yet.</p>`;
-          }
+      dbRef.on('value', (snapshot) => {
+        const data = snapshot.val() || { portfolio: [], marketplace: [] };
 
-          // Render Marketplace
-          marketplaceContainer.innerHTML = '';
-          if (data.marketplace && data.marketplace.length > 0) {
-            data.marketplace.forEach(item => {
-              const card = document.createElement('div');
-              card.className = 'marketplace-card';
-              card.innerHTML = `
-                <img src="${item.image}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/400x220/cccccc/333333?text=Image+Not+Found'" />
-                <h3>${item.title}</h3>
-                <p>${item.description}</p>
-                <div class="price">${item.price}</div>
-                <p class="note">${item.note}</p>
-              `;
-              marketplaceContainer.appendChild(card);
-            });
-          } else {
-            marketplaceContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-secondary);">No marketplace items yet.</p>`;
-          }
-        });
-      })
-      .catch(error => {
-        console.error("Firebase failed to load:", error);
-        document.querySelector('.portfolio-grid').innerHTML = `<p style="color: red; text-align: center;">Failed to load portfolio. Check console.</p>`;
-        document.querySelector('.marketplace-grid').innerHTML = `<p style="color: red; text-align: center;">Failed to load marketplace. Check console.</p>`;
+        // Render Portfolio
+        portfolioContainer.innerHTML = '';
+        if (data.portfolio?.length) {
+          data.portfolio.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'portfolio-card';
+            card.innerHTML = `
+              <img src="${item.image}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/400x220/cccccc/333333?text=Image+Not+Found'" />
+              <h3>${item.title}</h3>
+              <p>${item.description}</p>
+              <div class="tags">
+                ${(item.tags || []).map(tag => `<span class="tag">${tag}</span>`).join('')}
+              </div>
+            `;
+            portfolioContainer.appendChild(card);
+          });
+        } else {
+          portfolioContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-secondary);">No portfolio items yet.</p>`;
+        }
+
+        // Render Marketplace
+        marketplaceContainer.innerHTML = '';
+        if (data.marketplace?.length) {
+          data.marketplace.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'marketplace-card';
+            card.innerHTML = `
+              <img src="${item.image}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/400x220/cccccc/333333?text=Image+Not+Found'" />
+              <h3>${item.title}</h3>
+              <p>${item.description}</p>
+              <div class="price">${item.price}</div>
+              <p class="note">${item.note}</p>
+            `;
+            marketplaceContainer.appendChild(card);
+          });
+        } else {
+          marketplaceContainer.innerHTML = `<p style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-secondary);">No marketplace items yet.</p>`;
+        }
       });
+    });
   </script>
 
-  <!-- Main Scripts (Theme Toggle, Smooth Scroll, Mobile Menu) -->
+  <!-- Main Scripts -->
   <script src="script.js"></script>
 </body>
 </html>
